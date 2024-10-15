@@ -1,0 +1,75 @@
+/* Estilos generales */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.profile-image {
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    border: 5px solid #0a1f44; /* Borde azul marino */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Animación suave */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para darle profundidad */
+}
+
+/* Efecto hover en la imagen */
+.profile-image:hover {
+    transform: rotate(-5deg); /* La imagen se inclina 5 grados hacia la izquierda */
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); /* Sombra más fuerte al pasar el mouse */
+}
+
+
+.contact-info a {
+    text-decoration: none;
+    color: #000;
+}
+
+/* Estilos de las cards */
+/* Centrar contenido dentro de las cards */
+/* Limitar el ancho y centrar las cards */
+.section-card {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 1300px;  /* Limita el ancho de las cards */
+    margin: 0 auto;    /* Centra las cards horizontalmente */
+}
+
+/* Cuando pases el mouse */
+.section-card:hover {
+    transform: scale(1.05);
+    border-color: #0a1f44;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+
+/* Sección oscura (presentación y otras) */
+.seccion-oscura {
+    background-color: #0a1f44;
+    color: white;
+    border: none;
+    padding: 60px 30px;
+}
+
+.seccion-clara {
+    background-color: white;
+    color: black;
+    padding: 60px 30px;
+}
+
+.navbar {
+    background-color: #333;
+}
+
+.navbar-nav .nav-link {
+    color: white !important;
+}
+
+.navbar-brand {
+    color: #f8f9fa !important;
+}
