@@ -31,6 +31,34 @@ document.addEventListener('DOMContentLoaded', (event) => {
     let leftPressed = false;
     let score = 0;
     let gameActive = false; // Controla si el juego está activo o no
+    const speedIncrement = 0.1; // Cantidad de incremento de velocidad
+    const winningScore = 720; // 6 factorial
+
+    // Configuración de los bloques
+    const brickRowCount = 3;
+    const brickColumnCount = 5;
+    const brickWidth = 75;
+    const brickHeight = 20;
+    const brickPadding = 10;
+    const brickOffsetTop = 30;
+    const brickOffsetLeft = 30;
+
+    // Arreglo de los bloques
+    let bricks = [];
+
+    // Función para inicializar o regenerar los bloques
+    function initializeBricks() {
+        bricks = [];
+        for (let c = 0; c < brickColumnCount; c++) {
+            bricks[c] = [];
+            for (let r = 0; r < brickRowCount; r++) {
+                bricks[c][r] = { x: 0, y: 0, status: 1 }; // status 1 significa que el bloque está activo
+            }
+        }
+    }
+
+    // Inicializar los bloques al inicio
+    initializeBricks();
 
     // Referencias al DOM
     const startGameBtn = document.getElementById('startGameBtn');
@@ -54,13 +82,69 @@ document.addEventListener('DOMContentLoaded', (event) => {
         ctx.closePath();
     }
 
+    // Dibujar los bloques
+    function drawBricks() {
+        for (let c = 0; c < brickColumnCount; c++) {
+            for (let r = 0; r < brickRowCount; r++) {
+                if (bricks[c][r].status === 1) { // Solo dibuja los bloques que están activos
+                    let brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
+                    let brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
+                    bricks[c][r].x = brickX;
+                    bricks[c][r].y = brickY;
+                    ctx.beginPath();
+                    ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                    ctx.fillStyle = "#0095DD";
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            }
+        }
+    }
+
+    // Detectar colisiones con los bloques
+    function collisionDetection() {
+        let allBricksDestroyed = true; // Bandera para verificar si todos los bloques han sido destruidos
+
+        for (let c = 0; c < brickColumnCount; c++) {
+            for (let r = 0; r < brickRowCount; r++) {
+                let brick = bricks[c][r];
+                if (brick.status === 1) {
+                    allBricksDestroyed = false; // Si al menos un bloque está activo, no han sido todos destruidos
+                    if (
+                        x > brick.x && x < brick.x + brickWidth &&
+                        y > brick.y && y < brick.y + brickHeight
+                    ) {
+                        dy = -dy; // Cambiar la dirección de la bola
+                        brick.status = 0; // Desactivar el bloque
+                        score++; // Aumentar la puntuación
+                        dx += dx > 0 ? speedIncrement : -speedIncrement; // Aumentar la velocidad en X
+                        dy += dy > 0 ? speedIncrement : -speedIncrement; // Aumentar la velocidad en Y
+
+                        // Verificar si el jugador ha ganado
+                        if (score >= winningScore) {
+                            alert("¡Ganaste con una puntuación de 6 factorial (720)!");
+                            document.location.reload();
+                        }
+                    }
+                }
+            }
+        }
+
+        // Si todos los bloques han sido destruidos, regenerarlos
+        if (allBricksDestroyed && score < winningScore) {
+            initializeBricks();
+        }
+    }
+
     // Dibujar el juego
     function draw() {
         if (!gameActive) return; // Si el juego no está activo, no hacer nada
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBricks();
         drawBall();
         drawPaddle();
+        collisionDetection();
         scoreDisplay.textContent = "Puntuación: " + score;
 
         // Colisión con los bordes
@@ -72,11 +156,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
         } else if (y + dy > canvas.height - ballRadius) {
             if (x > paddleX && x < paddleX + paddleWidth) {
                 dy = -dy;
-                score++; // Aumentar la puntuación cuando la bola rebota en la paleta
+                dx += dx > 0 ? speedIncrement : -speedIncrement; // Aumentar la velocidad en X
+                dy += dy > 0 ? speedIncrement : -speedIncrement; // Aumentar la velocidad en Y
             } else {
                 // Si la bola cae fuera de la paleta, termina el juego
                 gameActive = false;
                 alert("Perdiste. Tu puntuación fue: " + score);
+                canvas.style.display = 'none'; // Ocultar el canvas cuando el jugador pierda
                 startGameBtn.disabled = true; // Desactivar el botón para que no pueda jugar de nuevo
             }
         }
